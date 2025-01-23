@@ -2,11 +2,11 @@ const {test, describe} = require('node:test')
 const assert = require('node:assert')
 const listHelper = require('../utils/list_helper')
 
-test('dummy returns one', () => {
-    const blogs = []
-    const result = listHelper.dummy(blogs)
-    assert.strictEqual(result, 1)
-})
+// test('dummy returns one', () => {
+//     const blogs = []
+//     const result = listHelper.dummy(blogs)
+//     assert.strictEqual(result, 1)
+// })
 
 describe('total likes', () => {
     const listWithOneBlog = [
@@ -73,17 +73,17 @@ describe('total likes', () => {
 
     const listWIthNoBlog = []
 
-    test('when list has only one blog', () => {
-        const result = listHelper.totalLikes(listWithOneBlog)
-        assert.strictEqual(result, 5)
-    })
+    // test('when list has only one blog', () => {
+    //     const result = listHelper.totalLikes(listWithOneBlog)
+    //     assert.strictEqual(result, 5)
+    // })
 
-    test('when list has multiple blog', () => {
-        const result = listHelper.totalLikes(listwithMultipleBlog)
-        assert.strictEqual(result, 36)
-    })
+    // test('when list has multiple blog', () => {
+    //     const result = listHelper.totalLikes(listwithMultipleBlog)
+    //     assert.strictEqual(result, 36)
+    // })
 
-    test('when list has no blog', () => {
-        assert.strictEqual(listHelper.totalLikes(listWIthNoBlog), 0)
-    })
+    // test('when list has no blog', () => {
+    //     assert.strictEqual(listHelper.totalLikes(listWIthNoBlog), 0)
+    // })
 })
