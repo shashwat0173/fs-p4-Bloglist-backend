@@ -1,6 +1,16 @@
-const blogsRouter = require('express').Router();
-const Blog = require('../models/blog');
-const User = require('../models/user');
+const jwt = require('jsonwebtoken')
+const blogsRouter = require('express').Router()
+const Blog = require('../models/blog')
+const User = require('../models/user')
+
+const getTokenFrom = request => {
+  const authorization = request.get('authorization')
+  if(authorization && authorization.startsWith('Bearer ')){
+    return authorization.replace('Bearer ', '')
+  }
+  return null
+}
+
 
 blogsRouter.get('/', async (request, response) => {
   try {
@@ -11,18 +21,22 @@ blogsRouter.get('/', async (request, response) => {
   }
 });
 
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', async (request, response, next) => {
   try {
-    const allUsers = await User.find({})
-    request.body.user = allUsers[0].id 
+    const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+
+    if(!decodedToken.id){
+      return response.status(401).json({error : 'token invalid'})
+    }
+    const user = await User.findById(decodedToken.id)
+    request.body.user = user.id 
     const blog = new Blog(request.body)
     const savedBlog = await blog.save()
-    const user = await User.findById(request.body.user);
     user.blogs = user.blogs.concat(savedBlog.id);
     await user.save();
     response.status(201).json(savedBlog)
   } catch (error) {
-    response.status(500).json({ error: 'Something went wrong' });
+    next(error)
   }
 });
 
@@ -31,7 +45,7 @@ blogsRouter.delete('/:id', async (request, response) => {
     await Blog.findByIdAndDelete(request.params.id);
     response.status(204).end();
   } catch (error) {
-    response.status(500).json({ error: 'Something went wrong' });
+    next(error);
   }
 });
 
