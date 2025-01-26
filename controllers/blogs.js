@@ -1,9 +1,10 @@
 const blogsRouter = require('express').Router();
 const Blog = require('../models/blog');
+const User = require('../models/user');
 
 blogsRouter.get('/', async (request, response) => {
   try {
-    const blogs = await Blog.find({});
+    const blogs = await Blog.find({}).populate('user', {username : 1});
     response.json(blogs);
   } catch (error) {
     response.status(500).json({ error: 'Something went wrong' });
@@ -12,9 +13,14 @@ blogsRouter.get('/', async (request, response) => {
 
 blogsRouter.post('/', async (request, response) => {
   try {
-    const blog = new Blog(request.body);
-    const savedBlog = await blog.save();
-    response.status(201).json(savedBlog);
+    const allUsers = await User.find({})
+    request.body.user = allUsers[0].id 
+    const blog = new Blog(request.body)
+    const savedBlog = await blog.save()
+    const user = await User.findById(request.body.user);
+    user.blogs = user.blogs.concat(savedBlog.id);
+    await user.save();
+    response.status(201).json(savedBlog)
   } catch (error) {
     response.status(500).json({ error: 'Something went wrong' });
   }
