@@ -21,6 +21,15 @@ blogsRouter.get('/', async (request, response) => {
   }
 });
 
+blogsRouter.get('/:id', async (request, response) => {
+  try {
+    const blogs = await Blog.findById(request.params.id);
+    response.json(blogs);
+  } catch (error) {
+    response.status(500).json({ error: 'Something went wrong' });
+  }
+});
+
 blogsRouter.post('/', async (request, response, next) => {
   try {
     const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
@@ -51,6 +60,7 @@ blogsRouter.delete('/:id', async (request, response) => {
 
 blogsRouter.put('/:id', async (request, response) => {
   try {
+    console.log('HIT')
     const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, request.body, { new: true });
     response.json(updatedBlog);
   } catch (error) {
